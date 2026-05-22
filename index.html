@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>923SUX</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background:
+        radial-gradient(circle at center, rgba(0,255,90,0.18), transparent 35%),
+        linear-gradient(180deg, #050505, #000);
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .container {
+      padding: 30px;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    h1 {
+      font-size: clamp(4rem, 14vw, 10rem);
+      margin: 0;
+      color: #39ff14;
+      text-shadow:
+        0 0 10px #39ff14,
+        0 0 30px #39ff14,
+        0 0 70px #00ff66;
+      letter-spacing: 6px;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      margin: 10px 0;
+    }
+
+    p {
+      color: #cfcfcf;
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+
+    a {
+      display: inline-block;
+      padding: 14px 26px;
+      background: #39ff14;
+      color: black;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 8px;
+      box-shadow: 0 0 25px #39ff14;
+      transition: 0.2s;
+    }
+
+    a:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 45px #39ff14;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .smoke {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(57,255,20,0.08);
+      filter: blur(60px);
+      border-radius: 50%;
+      animation: float 8s infinite alternate ease-in-out;
+    }
+
+    .smoke.one { top: 10%; left: 10%; }
+    .smoke.two { bottom: 10%; right: 10%; animation-delay: 2s; }
+
+    @keyframes float {
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(-40px) scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+  <div class="smoke one"></div>
+  <div class="smoke two"></div>
+
+  <div class="container">
+    <h1>923SUX</h1>
+    <h2>Coming Soon..</h2>
+    <p>Rotter still sucks..</p>
+    <a href="https://discord.gg/x6nEkE7T">Join the Discord</a>
+  </div>
+</body>
+</html>
