@@ -3,100 +3,550 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>923SUX</title>
+  <title>ATZ 923 Survey</title>
   <style>
+    :root {
+      --green: #39ff14;
+      --green2: #00ff88;
+      --dark: #030504;
+      --panel: rgba(5, 18, 12, 0.86);
+      --border: rgba(57, 255, 20, 0.45);
+      --text: #e9ffe9;
+      --muted: #a9b8a9;
+      --danger: #ff3b3b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
       background:
-        radial-gradient(circle at center, rgba(0,255,90,0.18), transparent 35%),
-        linear-gradient(180deg, #050505, #000);
-      color: white;
-      font-family: Arial, sans-serif;
+        radial-gradient(circle at top, rgba(57,255,20,0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(0,255,136,0.12), transparent 30%),
+        linear-gradient(180deg, #050805, #000);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.025),
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px,
+          transparent 5px
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(57,255,20,0.08), transparent 22%),
+        radial-gradient(circle at 80% 75%, rgba(57,255,20,0.06), transparent 26%);
+      filter: blur(8px);
+      pointer-events: none;
+      animation: smoke 8s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes smoke {
+      from { transform: translateY(0) scale(1); opacity: .75; }
+      to { transform: translateY(-18px) scale(1.05); opacity: 1; }
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      padding: 24px;
+    }
+
+    .terminal {
+      width: min(960px, 100%);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow:
+        0 0 30px rgba(57,255,20,0.18),
+        inset 0 0 35px rgba(57,255,20,0.06);
+      border-radius: 18px;
       overflow: hidden;
+      backdrop-filter: blur(8px);
     }
 
-    .container {
-      padding: 30px;
-      animation: fadeIn 1.5s ease-in-out;
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(57,255,20,0.24);
+      background: rgba(0,0,0,0.35);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
     }
 
-    h1 {
-      font-size: clamp(4rem, 14vw, 10rem);
-      margin: 0;
-      color: #39ff14;
-      text-shadow:
-        0 0 10px #39ff14,
-        0 0 30px #39ff14,
-        0 0 70px #00ff66;
-      letter-spacing: 6px;
-    }
-
-    h2 {
-      font-size: clamp(1.5rem, 4vw, 3rem);
-      margin: 10px 0;
-    }
-
-    p {
-      color: #cfcfcf;
-      font-size: 1.2rem;
-      margin-bottom: 30px;
-    }
-
-    a {
+    .status-dot {
       display: inline-block;
-      padding: 14px 26px;
-      background: #39ff14;
-      color: black;
-      text-decoration: none;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 14px var(--green);
+      margin-right: 8px;
+    }
+
+    .lock-screen,
+    .survey-screen {
+      padding: clamp(28px, 6vw, 60px);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .logo h1 {
+      margin: 0;
+      font-size: clamp(4rem, 16vw, 10rem);
+      line-height: .9;
+      color: var(--green);
+      letter-spacing: 7px;
+      text-shadow:
+        0 0 12px var(--green),
+        0 0 34px rgba(57,255,20,.8),
+        0 0 76px rgba(0,255,136,.45);
+      animation: pulseGlow 2.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { filter: brightness(0.92); transform: scale(1); }
+      to { filter: brightness(1.16); transform: scale(1.01); }
+    }
+
+    .logo p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 14px;
+    }
+
+    .access-card {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 24px;
+      border: 1px solid rgba(57,255,20,0.3);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.36);
+    }
+
+    .access-card h2,
+    .survey-screen h2 {
+      margin-top: 0;
+      color: var(--green2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      color: #dfffe0;
       font-weight: bold;
-      border-radius: 8px;
-      box-shadow: 0 0 25px #39ff14;
-      transition: 0.2s;
     }
 
-    a:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 45px #39ff14;
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(57,255,20,0.4);
+      background: rgba(0,0,0,0.65);
+      color: white;
+      font-size: 16px;
+      outline: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+    input[type="text"]:focus,
+    select:focus {
+      box-shadow: 0 0 18px rgba(57,255,20,0.22);
+      border-color: var(--green);
+    }
+
+    button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 15px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      color: #021402;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 24px rgba(57,255,20,.35);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 38px rgba(57,255,20,.55);
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .wrong {
+      color: var(--danger);
+      animation: shake .25s linear 2;
+    }
+
+    .granted {
+      color: var(--green);
+      text-shadow: 0 0 14px var(--green);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .unlocking {
+      animation: unlockFlash 1.2s ease forwards;
+    }
+
+    @keyframes unlockFlash {
+      0% { filter: brightness(1); transform: scale(1); }
+      35% { filter: brightness(1.8); transform: scale(1.015); box-shadow: 0 0 80px rgba(57,255,20,.75); }
+      100% { filter: brightness(1); transform: translateY(-20px); opacity: 0; }
+    }
+
+    .survey-screen {
+      display: none;
+      animation: surveyReveal .8s ease forwards;
+    }
+
+    @keyframes surveyReveal {
+      from { opacity: 0; transform: translateY(26px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .smoke {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      background: rgba(57,255,20,0.08);
-      filter: blur(60px);
-      border-radius: 50%;
-      animation: float 8s infinite alternate ease-in-out;
+    .intro {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 26px;
     }
 
-    .smoke.one { top: 10%; left: 10%; }
-    .smoke.two { bottom: 10%; right: 10%; animation-delay: 2s; }
+    .question {
+      padding: 22px;
+      margin: 18px 0;
+      border: 1px solid rgba(57,255,20,0.22);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.3);
+    }
 
-    @keyframes float {
-      from { transform: translateY(0) scale(1); }
-      to { transform: translateY(-40px) scale(1.2); }
+    .question h3 {
+      margin: 0 0 14px;
+      color: #f3fff3;
+      font-size: 18px;
+    }
+
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      color: #d8ead8;
+      font-weight: normal;
+      margin: 0;
+      cursor: pointer;
+      line-height: 1.35;
+    }
+
+    .option input {
+      margin-top: 3px;
+      accent-color: var(--green);
+    }
+
+    .submit-message {
+      text-align: center;
+      margin-top: 18px;
+      font-weight: bold;
+      min-height: 24px;
+    }
+
+    .success {
+      color: var(--green);
+    }
+
+    .error {
+      color: var(--danger);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .terminal {
+        border-radius: 12px;
+      }
+
+      .topbar {
+        font-size: 11px;
+        gap: 8px;
+      }
+
+      .lock-screen,
+      .survey-screen {
+        padding: 24px 16px;
+      }
+
+      .question {
+        padding: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="smoke one"></div>
-  <div class="smoke two"></div>
+  <main class="page">
+    <section class="terminal" id="terminal">
+      <div class="topbar">
+        <span><span class="status-dot"></span>ATZ 923 Secure Channel</span>
+        <span>Access Level: Member</span>
+      </div>
 
-  <div class="container">
-    <h1>923SUX</h1>
-    <h2>Coming Soon..</h2>
-    <p>Rotter still sucks..</p>
-    <a href="https://discord.gg/x6nEkE7T">Join the Discord</a>
-  </div>
+      <div class="lock-screen" id="lockScreen">
+        <div class="logo">
+          <h1>ATZ 923</h1>
+          <p>Alliance survey terminal</p>
+        </div>
+
+        <div class="access-card">
+          <h2>Access Locked</h2>
+          <p class="intro">Verification required before loading the survey.</p>
+
+          <label for="passcode">Who sent you?</label>
+          <input type="text" id="passcode" autocomplete="off" placeholder="Enter answer..." />
+
+          <button type="button" onclick="checkAccess()">Unlock Survey</button>
+          <div class="message" id="accessMessage"></div>
+        </div>
+      </div>
+
+      <div class="survey-screen" id="surveyScreen">
+        <h2>923 Alliance Survey</h2>
+        <p class="intro">
+          Please answer honestly. This survey is meant to help leadership understand where players stand
+          and when people are available for events.
+        </p>
+
+        <form id="surveyForm">
+          <div class="question">
+            <h3>What is your 923 username?</h3>
+            <input type="text" name="username" required placeholder="Your in-game name" />
+          </div>
+
+          <div class="question">
+            <h3>What alliance are you in?</h3>
+            <label class="option"><input type="radio" name="alliance" value="ATZ" required /> ATZ</label>
+            <label class="option"><input type="radio" name="alliance" value="MSV" /> MSV</label>
+            <label class="option"><input type="radio" name="alliance" value="ONE" /> ONE</label>
+          </div>
+
+          <div class="question">
+            <h3>How important is it to win events compared to having fun?</h3>
+            <label class="option"><input type="radio" name="winFun" value="Win at all cost" required /> Win at all cost</label>
+            <label class="option"><input type="radio" name="winFun" value="Winning is the priority, but let's try to have fun" /> Winning is the priority, but let's try to have fun</label>
+            <label class="option"><input type="radio" name="winFun" value="Both are equally important" /> Both are equally important</label>
+            <label class="option"><input type="radio" name="winFun" value="Fun is the priority but it is good to win as well" /> Fun is the priority but it is good to win as well</label>
+            <label class="option"><input type="radio" name="winFun" value="Let's just have fun, if we win that is just a bonus" /> Let's just have fun, if we win that is just a bonus</label>
+          </div>
+
+          <div class="question">
+            <h3>What method should we use in determining who plays in ATZ?</h3>
+            <label class="option"><input type="radio" name="atzMethod" value="Based solely on participation and it should be evaluated somewhat regularly" required /> Based solely on participation and it should be evaluated somewhat regularly</label>
+            <label class="option"><input type="radio" name="atzMethod" value="Based solely on participation and it should be done a couple of times a year" /> Based solely on participation and it should be done a couple of times a year</label>
+            <label class="option"><input type="radio" name="atzMethod" value="Other factors such as friend groups should be factored in and it should be evaluated somewhat regularly" /> Other factors such as friend groups should be factored in and it should be evaluated somewhat regularly</label>
+            <label class="option"><input type="radio" name="atzMethod" value="Other factors such as friend groups should be factored in and it should be done a couple of times a year" /> Other factors such as friend groups should be factored in and it should be done a couple of times a year</label>
+          </div>
+
+          <div class="question">
+            <h3>Relative to other single merged nations, 923 has a high national BP. Since the nation's BP is factored into Head of State matchups, please select the option that most closely matches your opinion:</h3>
+            <label class="option"><input type="radio" name="bpOpinion" value="I support firm BP limits and other measures to reduce bloat" required /> I support firm BP limits and other measures to reduce bloat</label>
+            <label class="option"><input type="radio" name="bpOpinion" value="I support moderate and targeted BP reduction" /> I support moderate and targeted BP reduction</label>
+            <label class="option"><input type="radio" name="bpOpinion" value="I support measures that reduce farm BP but we should leave main cities alone" /> I support measures that reduce farm BP but we should leave main cities alone</label>
+            <label class="option"><input type="radio" name="bpOpinion" value="I think we should let BP reduction occur naturally" /> I think we should let BP reduction occur naturally</label>
+          </div>
+
+          <div class="question">
+            <h3>Select all of the timeslots you are available to play Polar and Wasteland, in server time:</h3>
+            <label class="option"><input type="checkbox" name="polarTimes" value="05:00 - 06:00 Server Time" /> 05:00 - 06:00 Server Time</label>
+            <label class="option"><input type="checkbox" name="polarTimes" value="13:00 - 14:00 Server Time" /> 13:00 - 14:00 Server Time</label>
+            <label class="option"><input type="checkbox" name="polarTimes" value="21:00 - 22:00 Server Time" /> 21:00 - 22:00 Server Time</label>
+          </div>
+
+          <div class="question">
+            <h3>To better organize peak times for KEs, please select all of the times you are typically available, in server time:</h3>
+            <label class="option"><input type="checkbox" name="keTimes" value="00:00 - 01:00" /> 00:00 - 01:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="01:00 - 02:00" /> 01:00 - 02:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="02:00 - 03:00" /> 02:00 - 03:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="03:00 - 04:00" /> 03:00 - 04:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="04:00 - 05:00" /> 04:00 - 05:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="05:00 - 06:00" /> 05:00 - 06:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="06:00 - 07:00" /> 06:00 - 07:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="07:00 - 08:00" /> 07:00 - 08:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="08:00 - 09:00" /> 08:00 - 09:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="09:00 - 10:00" /> 09:00 - 10:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="10:00 - 11:00" /> 10:00 - 11:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="11:00 - 12:00" /> 11:00 - 12:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="12:00 - 13:00" /> 12:00 - 13:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="13:00 - 14:00" /> 13:00 - 14:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="14:00 - 15:00" /> 14:00 - 15:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="15:00 - 16:00" /> 15:00 - 16:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="16:00 - 17:00" /> 16:00 - 17:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="17:00 - 18:00" /> 17:00 - 18:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="18:00 - 19:00" /> 18:00 - 19:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="19:00 - 20:00" /> 19:00 - 20:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="20:00 - 21:00" /> 20:00 - 21:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="21:00 - 22:00" /> 21:00 - 22:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="22:00 - 23:00" /> 22:00 - 23:00</label>
+            <label class="option"><input type="checkbox" name="keTimes" value="23:00 - 24:00" /> 23:00 - 24:00</label>
+          </div>
+
+          <button type="submit" id="submitBtn">Submit Survey</button>
+          <div class="submit-message" id="submitMessage"></div>
+        </form>
+
+        <p class="footer-note">ATZ 923 survey terminal · Responses are recorded for alliance planning.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxx8RV7FP24gbLGg-B12QHItL2HBHiujdyexT0DDncFu9n95BiCnarFgIVLJACm9F6JDw/exec";
+    const CORRECT_ANSWER = "austin666";
+
+    const lockScreen = document.getElementById("lockScreen");
+    const surveyScreen = document.getElementById("surveyScreen");
+    const accessMessage = document.getElementById("accessMessage");
+    const passcode = document.getElementById("passcode");
+    const form = document.getElementById("surveyForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const submitMessage = document.getElementById("submitMessage");
+
+    passcode.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        checkAccess();
+      }
+    });
+
+    function checkAccess() {
+      const answer = passcode.value.trim().toLowerCase();
+
+      if (answer === CORRECT_ANSWER) {
+        accessMessage.textContent = "ACCESS GRANTED — SURVEY UNLOCKING";
+        accessMessage.className = "message granted";
+        lockScreen.classList.add("unlocking");
+
+        setTimeout(() => {
+          lockScreen.style.display = "none";
+          surveyScreen.style.display = "block";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 1100);
+      } else {
+        accessMessage.textContent = "WRONG ANSWER";
+        accessMessage.className = "message wrong";
+        setTimeout(() => {
+          accessMessage.className = "message";
+        }, 700);
+      }
+    }
+
+    function getRadioValue(name) {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      return selected ? selected.value : "";
+    }
+
+    function getCheckedValues(name) {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(item => item.value);
+    }
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const data = {
+        username: form.username.value.trim(),
+        alliance: getRadioValue("alliance"),
+        winFun: getRadioValue("winFun"),
+        atzMethod: getRadioValue("atzMethod"),
+        bpOpinion: getRadioValue("bpOpinion"),
+        polarTimes: getCheckedValues("polarTimes"),
+        keTimes: getCheckedValues("keTimes")
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+      submitMessage.textContent = "";
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        submitMessage.textContent = "Survey submitted. Thank you!";
+        submitMessage.className = "submit-message success";
+        form.reset();
+      } catch (error) {
+        submitMessage.textContent = "Something went wrong. Please try again.";
+        submitMessage.className = "submit-message error";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Survey";
+      }
+    });
+  </script>
 </body>
 </html>
