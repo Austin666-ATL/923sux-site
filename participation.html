@@ -234,8 +234,8 @@
         <div>
           <label for="sortSelect">Sort By</label>
           <select id="sortSelect">
-            <option value="weightedCombinedScore">Combined Score</option>
             <option value="weightedParticipation">Event Participation</option>
+            <option value="weightedCombinedScore">Combined Score</option>
             <option value="name">Name</option>
             <option value="rank">Rank</option>
             <option value="keTotalScore">KE Score</option>
@@ -317,7 +317,7 @@
 
     let rows = [];
     let datasets = [];
-    let currentSort = "weightedCombinedScore";
+    let currentSort = "weightedParticipation";
     let currentDirection = "desc";
 
     const datasetSelect = document.getElementById("datasetSelect");
