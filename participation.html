@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>923 Participation Dashboard</title>
+  <style>
+    :root {
+      --green: #39ff14;
+      --green2: #00ff88;
+      --panel: rgba(5, 18, 12, 0.9);
+      --border: rgba(57, 255, 20, 0.38);
+      --text: #e9ffe9;
+      --muted: #a9b8a9;
+      --red: #ff4b4b;
+      --yellow: #ffd166;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(57,255,20,0.16), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(0,255,136,0.10), transparent 30%),
+        linear-gradient(180deg, #050805, #000);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.022),
+          rgba(255,255,255,0.022) 1px,
+          transparent 1px,
+          transparent 5px
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      width: min(1280px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow:
+        0 0 30px rgba(57,255,20,0.16),
+        inset 0 0 35px rgba(57,255,20,0.05);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 7vw, 5.8rem);
+      color: var(--green);
+      letter-spacing: 4px;
+      text-shadow:
+        0 0 12px var(--green),
+        0 0 34px rgba(57,255,20,.6);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 12px;
+      border: 1px solid rgba(57,255,20,0.25);
+      background: rgba(0,0,0,0.35);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(57,255,20,0.38);
+      background: rgba(0,0,0,0.66);
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      border: 1px solid rgba(57,255,20,0.25);
+      background: rgba(0,0,0,0.35);
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 94px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--green2);
+      font-size: 22px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(57,255,20,0.12);
+    }
+
+    .table-scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th,
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid rgba(57,255,20,0.14);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: #071107;
+      color: var(--green);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    tr:hover td { background: rgba(57,255,20,0.06); }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(57,255,20,0.12);
+      border: 1px solid rgba(57,255,20,0.25);
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    .score-high { color: var(--green2); font-weight: bold; }
+    .score-mid { color: var(--yellow); font-weight: bold; }
+    .score-low { color: var(--red); font-weight: bold; }
+
+    .loading,
+    .error {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .error { color: var(--red); }
+
+    @media (max-width: 800px) {
+      .page { padding: 12px; }
+      .controls { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>923 PARTICIPATION</h1>
+
+      <div class="controls">
+        <div>
+          <label for="datasetSelect">Dataset Date</label>
+          <select id="datasetSelect">
+            <option>Loading tabs...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sortSelect">Sort By</label>
+          <select id="sortSelect">
+            <option value="weightedCombinedScore">Combined Score</option>
+            <option value="weightedParticipation">Event Participation</option>
+            <option value="name">Name</option>
+            <option value="rank">Rank</option>
+            <option value="keTotalScore">KE Score</option>
+            <option value="ewTotalScore">EW Score</option>
+            <option value="polarTotalScore">Polar Score</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="directionSelect">Direction</label>
+          <select id="directionSelect">
+            <option value="desc">High → Low</option>
+            <option value="asc">Low → High</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="searchInput">Search Player</label>
+          <input id="searchInput" type="text" placeholder="Optional search..." />
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <span>Players Displayed</span>
+        <strong id="playersCount">0</strong>
+      </div>
+      <div class="stat">
+        <span>Top Combined Score</span>
+        <strong id="topScore">0</strong>
+      </div>
+      <div class="stat">
+        <span>Highest Participation</span>
+        <strong id="topParticipationNames">—</strong>
+      </div>
+      <div class="stat">
+        <span>Loaded Dataset</span>
+        <strong id="loadedDataset">—</strong>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <div id="status" class="loading">Loading participation data...</div>
+      <div class="table-scroll" id="tableContainer" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="displayRank">#</th>
+              <th data-sort="name">Name</th>
+              <th data-sort="rank">Rank</th>
+              <th data-sort="keTotalScore">KE Score</th>
+              <th data-sort="ewTotalScore">EW Score</th>
+              <th data-sort="ewEvents">EW Events</th>
+              <th data-sort="polarTotalScore">Polar Score</th>
+              <th data-sort="polarEvents">Polar Events</th>
+              <th data-sort="weightedCombinedScore">Combined Score</th>
+              <th data-sort="weightedParticipation">Event Participation</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SHEET_ID = "11tIzrc_s1pkg1lBn_5JOYpP2N05n3X4IFzjJFQNzxJA";
+
+    /*
+      Automatic tab loading:
+      The page tries to detect all visible Google Sheet tabs automatically.
+      If Google blocks the tab-list endpoint, it will use this fallback list.
+    */
+    const FALLBACK_DATASETS = [
+      "5-4-26",
+      "4-28-26"
+    ];
+
+    let rows = [];
+    let datasets = [];
+    let currentSort = "weightedCombinedScore";
+    let currentDirection = "desc";
+
+    const datasetSelect = document.getElementById("datasetSelect");
+    const sortSelect = document.getElementById("sortSelect");
+    const directionSelect = document.getElementById("directionSelect");
+    const searchInput = document.getElementById("searchInput");
+    const tableBody = document.getElementById("tableBody");
+    const statusBox = document.getElementById("status");
+    const tableContainer = document.getElementById("tableContainer");
+
+    async function init() {
+      datasets = await getSheetTabs();
+
+      datasetSelect.innerHTML = "";
+      datasets.forEach(dataset => {
+        const option = document.createElement("option");
+        option.value = dataset;
+        option.textContent = dataset;
+        datasetSelect.appendChild(option);
+      });
+
+      if (datasets.length) {
+        loadDataset(datasets[0]);
+      } else {
+        statusBox.className = "error";
+        statusBox.textContent = "No valid dataset tabs were found.";
+      }
+    }
+
+    datasetSelect.addEventListener("change", () => loadDataset(datasetSelect.value));
+    sortSelect.addEventListener("change", () => {
+      currentSort = sortSelect.value;
+      renderTable();
+    });
+    directionSelect.addEventListener("change", () => {
+      currentDirection = directionSelect.value;
+      renderTable();
+    });
+    searchInput.addEventListener("input", renderTable);
+
+    document.querySelectorAll("th[data-sort]").forEach(th => {
+      th.addEventListener("click", () => {
+        const sortKey = th.dataset.sort;
+        if (currentSort === sortKey) {
+          currentDirection = currentDirection === "desc" ? "asc" : "desc";
+        } else {
+          currentSort = sortKey;
+          currentDirection = "desc";
+        }
+        sortSelect.value = currentSort;
+        directionSelect.value = currentDirection;
+        renderTable();
+      });
+    });
+
+    function jsonp(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = "googleSheetCallback_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+        window[callbackName] = data => {
+          delete window[callbackName];
+          script.remove();
+          resolve(data);
+        };
+
+        const script = document.createElement("script");
+        script.src = url.includes("?") ? `${url}&callback=${callbackName}` : `${url}?callback=${callbackName}`;
+        script.onerror = () => {
+          delete window[callbackName];
+          script.remove();
+          reject(new Error("Could not load Google Sheet data."));
+        };
+        document.body.appendChild(script);
+      });
+    }
+
+    async function getSheetTabs() {
+      try {
+        const url = `https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/basic?alt=json-in-script`;
+        const feed = await jsonp(url);
+
+        const tabNames = (feed.feed.entry || [])
+          .map(entry => entry.title && entry.title.$t ? entry.title.$t.trim() : "")
+          .filter(Boolean)
+          .filter(name => looksLikeDateTab(name))
+          .sort(sortDateTabsNewestFirst);
+
+        return tabNames.length ? tabNames : FALLBACK_DATASETS;
+      } catch (error) {
+        return FALLBACK_DATASETS;
+      }
+    }
+
+    function looksLikeDateTab(name) {
+      return /^\d{1,2}-\d{1,2}-\d{2,4}$/.test(name.trim());
+    }
+
+    function parseTabDate(name) {
+      const parts = name.split("-").map(Number);
+      let [month, day, year] = parts;
+      if (year < 100) year += 2000;
+      return new Date(year, month - 1, day).getTime();
+    }
+
+    function sortDateTabsNewestFirst(a, b) {
+      return parseTabDate(b) - parseTabDate(a);
+    }
+
+    async function loadDataset(sheetName) {
+      statusBox.style.display = "block";
+      statusBox.className = "loading";
+      statusBox.textContent = "Loading participation data...";
+      tableContainer.style.display = "none";
+
+      try {
+        const query = encodeURIComponent("select *");
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:google.visualization.Query.setResponse&tq=${query}&sheet=${encodeURIComponent(sheetName)}`;
+        const data = await jsonp(url);
+        rows = parseGoogleSheet(data.table);
+        searchInput.value = "";
+        renderTable();
+        document.getElementById("loadedDataset").textContent = sheetName;
+      } catch (error) {
+        statusBox.className = "error";
+        statusBox.textContent = "Could not load this dataset. Check that the tab name exists and the sheet is viewable.";
+      }
+    }
+
+    function getCell(row, index) {
+      return row.c[index] ? row.c[index].v : "";
+    }
+
+    function toNumber(value) {
+      if (value === null || value === undefined || value === "") return 0;
+      return Number(String(value).replace(/,/g, "")) || 0;
+    }
+
+    function parseGoogleSheet(table) {
+      if (!table || !table.rows || table.rows.length < 2) return [];
+
+      return table.rows
+        .slice(1)
+        .map((row, index) => ({
+          displayRank: index + 1,
+          name: String(getCell(row, 0) || "").trim(),
+          rank: String(getCell(row, 1) || "").trim(),
+          keTotalScore: toNumber(getCell(row, 2)),
+          keEvents: toNumber(getCell(row, 3)),
+          ewTotalScore: toNumber(getCell(row, 6)),
+          ewEvents: toNumber(getCell(row, 7)),
+          polarTotalScore: toNumber(getCell(row, 8)),
+          polarEvents: toNumber(getCell(row, 9)),
+          wastelandTotalScore: toNumber(getCell(row, 10)),
+          wastelandEvents: toNumber(getCell(row, 11)),
+          weightedCombinedScore: toNumber(getCell(row, 12)),
+          weightedParticipation: toNumber(getCell(row, 13))
+        }))
+        .filter(row => row.name);
+    }
+
+    function formatNumber(value) {
+      return Number(value || 0).toLocaleString();
+    }
+
+    function formatDecimal(value) {
+      return Number(value || 0).toFixed(2);
+    }
+
+    function participationClass(value) {
+      if (value >= 2.3) return "score-high";
+      if (value >= 1.6) return "score-mid";
+      return "score-low";
+    }
+
+    function renderTable() {
+      const search = searchInput.value.trim().toLowerCase();
+
+      let filtered = rows.filter(row =>
+        row.name.toLowerCase().includes(search) ||
+        row.rank.toLowerCase().includes(search)
+      );
+
+      filtered.sort((a, b) => {
+        let left = a[currentSort];
+        let right = b[currentSort];
+
+        if (typeof left === "string") {
+          left = left.toLowerCase();
+          right = String(right).toLowerCase();
+          return currentDirection === "asc"
+            ? left.localeCompare(right)
+            : right.localeCompare(left);
+        }
+
+        return currentDirection === "asc" ? left - right : right - left;
+      });
+
+      tableBody.innerHTML = "";
+
+      filtered.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="rank-badge">${index + 1}</span></td>
+          <td>${escapeHtml(row.name)}</td>
+          <td>${escapeHtml(row.rank)}</td>
+          <td>${formatNumber(row.keTotalScore)}</td>
+          <td>${formatNumber(row.ewTotalScore)}</td>
+          <td>${formatDecimal(row.ewEvents)}</td>
+          <td>${formatNumber(row.polarTotalScore)}</td>
+          <td>${formatDecimal(row.polarEvents)}</td>
+          <td class="score-high">${formatNumber(row.weightedCombinedScore)}</td>
+          <td class="${participationClass(row.weightedParticipation)}">${formatDecimal(row.weightedParticipation)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      updateStats(filtered);
+      statusBox.style.display = "none";
+      tableContainer.style.display = "block";
+    }
+
+    function updateStats(filtered) {
+      document.getElementById("playersCount").textContent = filtered.length;
+      document.getElementById("topScore").textContent = formatNumber(Math.max(...filtered.map(r => r.weightedCombinedScore), 0));
+
+      const maxParticipation = Math.max(...filtered.map(r => r.weightedParticipation), 0);
+      const topPlayers = filtered
+        .filter(r => r.weightedParticipation === maxParticipation && maxParticipation > 0)
+        .map(r => r.name);
+
+      document.getElementById("topParticipationNames").textContent =
+        topPlayers.length ? topPlayers.join(", ") : "—";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    init();
+  </script>
+</body>
+</html>
